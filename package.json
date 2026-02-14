@@ -1,0 +1,15 @@
+{
+  "name": "team-selector",
+  "version": "1.0.0",
+  "description": "",
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "live-server --no-browser --port=8080 docs"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}

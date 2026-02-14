@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="description" content="Select your teams">
+        <title>The Dumb Terminal : Team Selector</title>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@1.0.4/css/bulma.min.css">
+        <link rel="SHORTCUT ICON" href="https://dumbterminal.co.uk/images/favicon.ico">
+        <script>
+            const STORAGE_KEY = 'teamSelector'
+
+            function readFromLocalStorage() {
+                const value = localStorage.getItem(STORAGE_KEY)
+                if(value) {
+                    return JSON.parse(value)
+                }
+                return {names: 'p1,p2,p3,p4,p5,p6'}
+            }
+
+            function writeToLocalStorage(value) {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(value))
+            }
+
+            function createTeams(names, teamCount){
+                const generatedTeams=[]
+                let tCount = 0
+                const shuffled = names.sort(() => 0.5 - Math.random());
+                for (const name of shuffled) {
+                    if(!generatedTeams[tCount]) {
+                        generatedTeams[tCount] = []
+                    }
+                    generatedTeams[tCount].push(name)
+                    
+                    if(tCount >= teamCount - 1) {
+                        tCount = 0
+                    }
+                    else {
+                        tCount++
+                    }  
+                }
+                return generatedTeams
+            }
+
+            function displayTeams(teams, container) {
+                container.innerHTML = ''
+                teams.forEach((team, index) => {
+                    const teamDiv = document.createElement('div')
+                    teamDiv.innerHTML = `<h3 class="title is-3">Team ${index + 1}</h3><ul>${team.map(name => `<li>${name}</li>`).join('')}</ul>`
+                    container.appendChild(teamDiv)
+                })
+            }
+
+            function generate(form) {
+                const names = form.names.value.split(',').map(name => name.trim()).filter(name => name.length > 0);
+                const teams = parseInt(form.teams.value);
+                writeToLocalStorage({names, teams})
+                const generatedTeams = createTeams(names, teams)
+                const teamsDiv = document.getElementById('generatedTeams')
+                displayTeams(generatedTeams, teamsDiv)
+            }
+
+            function init() {
+                const {names, teams} = readFromLocalStorage()
+                document.getElementById('names').value = names
+                document.getElementById('teams').value = teams
+            }
+        </script>
+    </head>
+    <body>
+        <section class="section">
+            <div class="container">
+                <h1 class="title is-1">Team selector</h1>
+                <p class="has-text-primary">Enter the player names and amount of teams.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <form id="input" onsubmit="generate(this); return false">
+                    <div class="field">
+                        <label class="label">Player names</label>
+                        <div class="control">
+                            <input class="input" type="text" name="names" id="names"/>
+                        </div>
+                        <p class="help">Enter player names separated by commas</p>
+                    </div>
+                    <div class="field">
+                        <label class="label">Number of teams</label>
+                        <div class="control">
+                            <div class="select">
+                                <select id="teams" name="teams">
+                                    <option>1</option>
+                                    <option>2</option>
+                                    <option>3</option>
+                                    <option>4</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <input type="submit" value="Generate" class="button"/>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <h2 class="title is-2">Generated Teams</h2>
+                <div class="content" id="generatedTeams">
+                </div>
+            </div>
+        </section>
+        <footer class="footer">
+            <div class="content has-text-centered">
+                <p>
+                    <a href="https://dumbterminal.co.uk" target="_blank">The Dumb Terminal</a> &copy; 2026
+                </p>
+            </div>
+        </footer>
+        <script>init()</script>
+    </body>
+</html>
